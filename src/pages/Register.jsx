@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authAPI } from '../services/api'
 import { USE_BACKEND, saveLocalUser, setLocalToken } from '../utils/localDemo'
+import { useAuth } from '../contexts/AuthContext'
 import BackButton from '../components/BackButton'
 
 const ACCOUNT_TYPES = [
@@ -11,6 +12,7 @@ const ACCOUNT_TYPES = [
 
 function Register() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -60,7 +62,9 @@ function Register() {
           companyAddress: isEntreprise ? form.companyAddress : undefined,
         }
         saveLocalUser(user)
-        setLocalToken('demo-' + form.email)
+        const token = 'demo-' + form.email
+        setLocalToken(token)
+        login(token, user)
         navigate('/dashboard')
       }
     } catch (err) {
@@ -75,7 +79,9 @@ function Register() {
           companyAddress: isEntreprise ? form.companyAddress : undefined,
         }
         saveLocalUser(user)
-        setLocalToken('demo-' + form.email)
+        const token = 'demo-' + form.email
+        setLocalToken(token)
+        login(token, user)
         navigate('/dashboard')
       } else {
         setError(err.response?.data?.message || "Erreur lors de l'inscription.")

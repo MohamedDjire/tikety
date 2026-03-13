@@ -1,23 +1,12 @@
-import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getCurrentUser } from '../utils/localDemo'
+import { useAuth } from '../contexts/AuthContext'
 
 function Navbar() {
   const navigate = useNavigate()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [userName, setUserName] = useState('')
-
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    setIsLoggedIn(!!token)
-    const user = getCurrentUser()
-    setUserName(user?.name || '')
-  }, [])
+  const { isLoggedIn, user, logout } = useAuth()
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    setIsLoggedIn(false)
-    setUserName('')
+    logout()
     navigate('/dashboard')
   }
 
@@ -30,7 +19,7 @@ function Navbar() {
         {isLoggedIn ? (
           <>
             <span className="navbar-user">
-              {userName || 'Mon espace'}
+              {user?.name || 'Mon espace'}
             </span>
             <button type="button" className="btn btn-outline" onClick={handleLogout}>
               Déconnexion

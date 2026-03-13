@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authAPI } from '../services/api'
 import { USE_BACKEND, getLocalUserByEmail, setLocalToken } from '../utils/localDemo'
+import { useAuth } from '../contexts/AuthContext'
 import BackButton from '../components/BackButton'
 
 function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -19,7 +21,7 @@ function Login() {
       if (USE_BACKEND) {
         const { data } = await authAPI.login(email, password)
         if (data.token) {
-          localStorage.setItem('token', data.token)
+          login(data.token)
           navigate('/dashboard')
         } else {
           setError('Réponse invalide du serveur.')
@@ -27,7 +29,9 @@ function Login() {
       } else {
         const user = getLocalUserByEmail(email)
         if (user) {
-          setLocalToken('demo-' + user.email)
+          const token = 'demo-' + user.email
+          setLocalToken(token)
+          login(token, user)
           navigate('/dashboard')
         } else {
           setError('Aucun compte avec cet email. Inscrivez-vous d\'abord.')
@@ -37,7 +41,9 @@ function Login() {
       if (!USE_BACKEND) {
         const user = getLocalUserByEmail(email)
         if (user) {
-          setLocalToken('demo-' + user.email)
+          const token = 'demo-' + user.email
+          setLocalToken(token)
+          login(token, user)
           navigate('/dashboard')
         } else {
           setError('Aucun compte avec cet email. Inscrivez-vous d\'abord.')
