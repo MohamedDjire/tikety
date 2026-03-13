@@ -60,8 +60,15 @@ function Payment() {
       return
     }
     try {
-      const { data } = await paymentAPI.create({ eventId, paymentMethod, quantity })
-      if (data.ticketId) {
+      const payload = {
+        eventId,
+        quantity,
+        paymentMethod,
+        email: email || undefined,
+        name: name || undefined,
+      }
+      const { data } = await paymentAPI.create(payload)
+      if (data?.ticketId) {
         navigate(`/ticket/${data.ticketId}`)
       } else {
         navigate(`/ticket/demo-${eventId}`)
